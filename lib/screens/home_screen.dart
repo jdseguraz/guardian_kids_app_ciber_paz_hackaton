@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../core/localization/app_localizations.dart';
 import '../providers/language_provider.dart';
 import 'profile_screen.dart';
+import 'parent_screen.dart';
+import 'info_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -58,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                         text: const TextSpan(
                           children: [
                             TextSpan(
-                              text: 'GUARDIAN',
+                              text: 'eco',
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
@@ -67,7 +69,7 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: 'KIDS',
+                              text: 'Guardians',
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
@@ -164,6 +166,39 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 16),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const InfoScreen(),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Ver más',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF7433FF),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  size: 16,
+                                  color: Color(0xFF7433FF),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -211,11 +246,10 @@ class HomeScreen extends StatelessWidget {
                   height: 60,
                   child: OutlinedButton(
                     onPressed: () {
-                      // TODO: Implementar módulo padre
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(localizations.translate('parent_module')),
-                          backgroundColor: const Color(0xFF7433FF),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ParentScreen(),
                         ),
                       );
                     },

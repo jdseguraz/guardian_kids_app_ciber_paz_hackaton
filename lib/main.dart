@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<LanguageProvider>(
         builder: (context, languageProvider, child) {
           return MaterialApp(
-            title: 'Ciber Paz Guardian Kids',
+            title: 'ecoGuardians',
             debugShowCheckedModeBanner: false,
             locale: languageProvider.locale, // Usar el locale del LanguageProvider
             localizationsDelegates: const [
