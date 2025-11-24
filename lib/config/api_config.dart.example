@@ -1,0 +1,7 @@
+class ApiConfig {
+  // COLOCA TU API KEY DE OPENAI AQUÍ
+  // Este archivo está en .gitignore para no subir la API key al repositorio
+  static const String openAiApiKey = 'TU_API_KEY_AQUI';
+  static const String openAiEndpoint = 'https://api.openai.com/v1/chat/completions';
+  static const String model = 'gpt-3.5-turbo';
+}
