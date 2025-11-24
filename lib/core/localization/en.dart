@@ -33,4 +33,17 @@ const Map<String, String> en = {
   'play_again': 'Play Again',
   'go_back': 'Go Back',
   'online': 'online',
+  'you_won': 'You Won!',
+  'you_won_message': 'Great! You didn\'t fall into the trap!',
+  'safety_tip': 'Safety Tip',
+  'points_earned': 'Points earned',
+  
+  // Profile
+  'profile': 'Profile',
+  'points': 'Points',
+  'games_won': 'Games Won',
+  'games_lost': 'Games Lost',
+  'total_games': 'Total Games',
+  'enter_simulator': 'Enter Simulator',
+  'your_stats': 'Your Stats',
 };

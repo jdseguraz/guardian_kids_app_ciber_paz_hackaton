@@ -33,4 +33,17 @@ const Map<String, String> es = {
   'play_again': 'Jugar de Nuevo',
   'go_back': 'Volver',
   'online': 'en línea',
+  'you_won': '¡Ganaste!',
+  'you_won_message': '¡Excelente! No caíste en la trampa!',
+  'safety_tip': 'Consejo de Seguridad',
+  'points_earned': 'Puntos ganados',
+  
+  // Profile
+  'profile': 'Perfil',
+  'points': 'Puntos',
+  'games_won': 'Juegos Ganados',
+  'games_lost': 'Juegos Perdidos',
+  'total_games': 'Juegos Totales',
+  'enter_simulator': 'Entrar al Simulador',
+  'your_stats': 'Tus Estadísticas',
 };

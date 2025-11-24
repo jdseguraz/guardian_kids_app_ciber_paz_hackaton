@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/localization/app_localizations.dart';
 import '../models/chat_message.dart';
 import '../services/openai_service.dart';
+import '../providers/profile_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -18,6 +20,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, String>> _apiMessages = [];
   bool _isLoading = false;
   bool _gameOver = false;
+  int _messageCount = 0;
+  static const int _maxMessagesForWin = 20;
   late ScenarioType _currentScenario;
   late String _strangerName;
   late String _strangerAvatar;
@@ -78,9 +82,20 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages.add(ChatMessage(text: userMessage, isUser: true));
       _isLoading = true;
+      _messageCount++;
     });
 
     _scrollToBottom();
+
+    // Verificar condición de victoria (20 mensajes sin perder)
+    if (_messageCount >= _maxMessagesForWin) {
+      setState(() {
+        _gameOver = true;
+        _isLoading = false;
+      });
+      await _showVictoryDialog();
+      return;
+    }
 
     // Agregar mensaje del usuario al historial de la API
     _apiMessages.add({
@@ -110,12 +125,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
       _scrollToBottom();
 
-      // Si el juego terminó, mostrar modal
+      // Si el juego terminó (perdió), mostrar modal
       if (isGameOver) {
         setState(() {
           _gameOver = true;
         });
-        _showGameOverDialog(message);
+        await _showGameOverDialog(message);
       }
     } catch (e) {
       final localizations = AppLocalizations.of(context);
@@ -131,9 +146,127 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void _showGameOverDialog(String explanation) {
+  Future<void> _showVictoryDialog() async {
     final localizations = AppLocalizations.of(context);
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     
+    const int pointsEarned = 100;
+    await profileProvider.addWin(pointsEarned);
+
+    final List<String> safetyTips = [
+      '💡 Nunca compartas tu dirección, escuela o lugares que frecuentas con extraños en línea.',
+      '💡 No envíes fotos personales a personas que no conoces en la vida real.',
+      '💡 Si alguien te pide guardar secretos de tus padres, es una señal de alerta.',
+      '💡 Desconfía de personas que te ofrecen regalos o recompensas sin razón.',
+      '💡 Siempre habla con un adulto de confianza si algo te hace sentir incómodo.',
+    ];
+
+    final randomTip = safetyTips[Random().nextInt(safetyTips.length)];
+    
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.emoji_events, color: Colors.amber, size: 32),
+            const SizedBox(width: 8),
+            Text(
+              localizations.translate('you_won'),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF7433FF),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              localizations.translate('you_won_message'),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF7433FF).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.star, color: Colors.amber, size: 24),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${localizations.translate('points_earned')}: +$pointsEarned',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF7433FF),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 8),
+            Text(
+              localizations.translate('safety_tip'),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF7433FF),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              randomTip,
+              style: const TextStyle(fontSize: 15),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+            child: Text(localizations.translate('go_back')),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _resetGame();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF7433FF),
+              foregroundColor: Colors.white,
+            ),
+            child: Text(localizations.translate('play_again')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showGameOverDialog(String explanation) async {
+    final localizations = AppLocalizations.of(context);
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    
+    await profileProvider.addLoss();
+    
+    if (!mounted) return;
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -196,6 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _apiMessages.clear();
       _isLoading = false;
       _gameOver = false;
+      _messageCount = 0;
       _selectRandomScenario();
       _selectRandomStranger();
       _addInitialMessage();

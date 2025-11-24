@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ciber_paz_guardian_kids/core/localization/app_localizations.dart';
 import 'package:ciber_paz_guardian_kids/providers/language_provider.dart';
+import 'package:ciber_paz_guardian_kids/providers/profile_provider.dart';
 import 'package:ciber_paz_guardian_kids/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LanguageProvider()), // Provider de idioma
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: Consumer<LanguageProvider>(
         builder: (context, languageProvider, child) {
